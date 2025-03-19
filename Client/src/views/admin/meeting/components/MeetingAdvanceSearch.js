@@ -3,11 +3,8 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Grid, GridItem, Input, FormLabel, Text, Button, } from '@chakra-ui/react';
 import Spinner from 'components/spinner/Spinner';
-import moment from 'moment';
 import { getSearchData, setGetTagValues, setSearchValue } from '../../../../redux/slices/advanceSearchSlice';
 import { useDispatch } from 'react-redux';
-
-
 
 const MeetingAdvanceSearch = (props) => {
     const { allData, advanceSearch, setAdvanceSearch, isLoding, setSearchedData, setDisplaySearchData, setSearchbox } = props;
@@ -31,26 +28,10 @@ const MeetingAdvanceSearch = (props) => {
         onSubmit: (values, { resetForm }) => {
             dispatch(setSearchValue(values))
             dispatch(getSearchData({ values: values, allData: allData, type: 'Meeting' }))
-            // const searchResult = allData?.filter(
-            //     (item) => {
-            //         const itemDate = new Date(item.dateTime);
-            //         const momentDate = moment(itemDate).format('YYYY-MM-DD');
-            //         const timeItemDate = new Date(item.timestamp);
-            //         const timeMomentDate = moment(timeItemDate).format('YYYY-MM-DD');
-            //         return (
-            //             (!values?.agenda || (item?.agenda && item?.agenda.toLowerCase().includes(values?.agenda?.toLowerCase()))) &&
-            //             (!values?.createBy || (item?.createBy && item?.createBy.toLowerCase().includes(values?.createBy?.toLowerCase()))) &&
-            //             (!values?.startDate || (momentDate >= values.startDate)) &&
-            //             (!values?.endDate || (momentDate <= values.endDate)) &&
-            //             (!values.timeStartDate || (timeMomentDate >= values.timeStartDate)) &&
-            //             (!values.timeEndDate || (timeMomentDate <= values.timeEndDate)))
-            //     }
-            // )
-
+            
             const dateFrom = `${values?.startDate && `From: ${values?.startDate}`}${values?.endDate && ` To: ${values?.endDate}`}`;
             const timeDateFrom = `${values?.timeStartDate && `From: ${values?.timeStartDate}`}${values?.timeEndDate && ` To: ${values?.timeEndDate}`}`
-            // let getValue = [values.agenda, values?.createBy, (values?.startDate || values?.endDate) && dateFrom, (values?.timeStartDate || values?.timeEndDate) && timeDateFrom].filter(value => value);
-
+            
             const getValue = [
                 {
                     name: ["agenda"],
@@ -64,14 +45,12 @@ const MeetingAdvanceSearch = (props) => {
                     name: ["startDate", "endDate"],
                     value: dateFrom
                 },
-
                 {
                     name: ["timeStartDate", "timeEndDate"],
                     value: timeDateFrom
                 }
             ]
             dispatch(setGetTagValues(getValue.filter(item => item.value)))
-            // setSearchedData(searchResult);
             setDisplaySearchData(true)
             setAdvanceSearch(false)
             resetForm();
@@ -99,7 +78,7 @@ const MeetingAdvanceSearch = (props) => {
                                     onChange={handleChange} onBlur={handleBlur}
                                     value={values?.agenda}
                                     name="agenda"
-                                    placeholder='Enter Lead Name'
+                                    placeholder='Enter Agenda'
                                     fontWeight='500'
                                 />
                                 <Text mb='10px' color={'red'}> {errors.agenda && touched.agenda && errors.agenda}</Text>
@@ -115,7 +94,7 @@ const MeetingAdvanceSearch = (props) => {
                                     onChange={handleChange} onBlur={handleBlur}
                                     value={values?.createBy}
                                     name="createBy"
-                                    placeholder='Enter Lead Email'
+                                    placeholder='Enter Email'
                                     fontWeight='500'
                                 />
                                 <Text mb='10px' color={'red'}> {errors.createBy && touched.createBy && errors.createBy}</Text>

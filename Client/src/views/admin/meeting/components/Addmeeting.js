@@ -43,22 +43,65 @@ const AddMeeting = (props) => {
         initialValues: initialValues,
         validationSchema: MeetingSchema,
         onSubmit: (values, { resetForm }) => {
-            
+            AddData();
         },
     });
     const { errors, touched, values, handleBlur, handleChange, handleSubmit, setFieldValue } = formik
 
     const AddData = async () => {
-
+        try {
+            setIsLoding(true);
+            const response = await postApi('api/meeting/add', values);
+            
+            if (response.status === 200) {
+                toast.success("Meeting added successfully");
+                onClose();
+                formik.resetForm();
+                if (fetchData) fetchData();
+                if (setAction) setAction(prevState => !prevState);
+            }
+        } catch (error) {
+            console.error("Error adding meeting:", error);
+            toast.error("Failed to add meeting");
+        } finally {
+            setIsLoding(false);
+        }
     };
 
     const fetchAllData = async () => {
-        
+        try {
+            if (values.related === "Contact") {
+                const result = await getApi('api/contact');
+                if (result.status === 200) {
+                    setContactData(result.data);
+                }
+            } else if (values.related === "Lead") {
+                const result = await getApi('api/lead');
+                if (result.status === 200) {
+                    setLeadData(result.data);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
     }
 
     useEffect(() => {
-
-    }, [props.id, values.related])
+        if (values.related) {
+            fetchAllData();
+        }
+        
+        // Pre-select contact or lead if provided
+        if (props.id && props.leadContect) {
+            if (props.leadContect === 'contactView') {
+                setFieldValue('attendes', [props.id]);
+                setFieldValue('related', 'Contact');
+            } else if (props.leadContect === 'leadView') {
+                setFieldValue('attendesLead', [props.id]);
+                setFieldValue('related', 'Lead');
+            }
+        }
+    }, [props.id, values.related]);
 
     const extractLabels = (selectedItems) => {
         return selectedItems.map((item) => item._id);
